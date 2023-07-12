@@ -1,0 +1,107 @@
+{% extends 'online/layouts/base.html' %}
+
+{% block titulo %}
+Registrarse
+{% endblock %}
+
+{% block contenido %}
+<!-- Begin Kenne's Breadcrumb Area -->
+<div class="breadcrumb-area">
+    <div class="container">
+        <div class="breadcrumb-content">
+            <h2>Registrarse</h2>
+            <ul>
+                <li><a href="{% url 'inicio' %}">Inicio</a></li>
+                <li class="active">Registrarse</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- Kenne's Breadcrumb Area End Here -->
+<!-- Begin Kenne's Login Register Area -->
+<div class="kenne-login-register_area">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-12 col-xs-12">
+                <form action="{% url 'registro' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="login-form">
+                        <h4 class="login-title">Registrarse</h4>
+                        <div class="row">
+                            <div class="col-md-6 col-12 mb--20">
+                                <label>Nombres</label>
+                                <input value="{{ form_django.nombres.value }}" name="nombres" type="text" class="{% if form_django.nombres.errors %} form-control is-invalid {% endif %}">
+                                {% if form_django.nombres.errors %}
+                                <div class="invalid-feedback">
+                                    <ul>
+                                        {% for error in form_django.nombres.errors %}
+                                        <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 col-12 mb--20">
+                                <label>Apellidos</label>
+                                <input value="{{ form_django.apellidos.value }}" name="apellidos" type="text" class="{% if form_django.apellidos.errors %} form-control is-invalid {% endif %}">
+                                {% if form_django.apellidos.errors %}
+                                <div class="invalid-feedback">
+                                    <ul>
+                                        {% for error in form_django.apellidos.errors %}
+                                        <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-12">
+                                <label>Correo electrónico</label>
+                                <input value="{{ form_django.email.value }}" name="email" type="email" class="{% if form_django.email.errors %} form-control is-invalid {% endif %}">
+                                {% if form_django.email.errors %}
+                                <div class="invalid-feedback">
+                                    <ul>
+                                        {% for error in form_django.email.errors %}
+                                        <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label>Contraseña</label>
+                                <input name="password" type="password" class="{% if form_django.password.errors %} form-control is-invalid {% endif %}">
+                                {% if form_django.password.errors %}
+                                <div class="invalid-feedback">
+                                    <ul>
+                                        {% for error in form_django.password.errors %}
+                                        <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label>Confirmar contraseña</label>
+                                <input name="confirmar_password" type="password" class="{% if form_django.confirmar_password.errors %} form-control is-invalid {% endif %}">
+                                {% if form_django.confirmar_password.errors %}
+                                <div class="invalid-feedback">
+                                    <ul>
+                                        {% for error in form_django.confirmar_password.errors %}
+                                        <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="kenne-register_btn">Registrarse</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Kenne's Login Register Area  End Here -->
+{% endblock %}
