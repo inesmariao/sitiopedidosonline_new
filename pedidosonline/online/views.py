@@ -4,12 +4,19 @@ from django.urls import reverse
 from online.forms import RegistroClienteForm, LoginForm
 from django.contrib.auth.models import User
 from pedidos.models import Cliente
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from productos.models import Producto
+from django.core.exceptions import ObjectDoesNotExist
+
 
 # portada
 
 
 def portada(request):
-    return render(request, "online/portada.html")
+    # consultar los registros en la tabla producto
+    productos = Producto.objects.all()
+    return render(request, "online/portada.html", {"lista_productos": productos})
 
 # registrarse: mostrar la pagina para registrarse
 
@@ -64,9 +71,8 @@ def registro_cliente(request):
 
 # iniciar sesión
 
-
 def iniciar_sesion(request):
-    formulario = LoginForm()
+    formulario = LoginForm(initial={"email": "", "password": ""})
     return render(request, "online/iniciar-sesion.html", {"formulario": formulario})
 
 # realizar el inicio de sesion
@@ -76,7 +82,14 @@ def ingresar_login(request):
     if request.method == 'POST':
         formulario = LoginForm(request.POST)
         if formulario.is_valid():
-            pass
+            email = formulario.cleaned_data["email"]
+            password = formulario.cleaned_data["password"]
+            usuario_logeado = authenticate(username=email, password=password)
+            login(request, usuario_logeado)
+            
+            # mi-cuenta
+            url = reverse("mi-cuenta")
+            return HttpResponseRedirect(url)
         else:
             return render(request, "online/iniciar-sesion.html", {"formulario": formulario})
     else:
@@ -84,9 +97,29 @@ def ingresar_login(request):
         return HttpResponseRedirect(url)
 
 # detalle del producto
+def detalle_producto(request, slug_url):
+    try:
+        # Object Productom, Exception
+        producto = Producto.objects.get(slug=slug_url)
+        # imagenes
+        imagenes = producto.imagen_set.order_by('orden')
+
+        return render(request, "online/detalle-producto.html", {"producto": producto, "imagenes": imagenes})
+    except ObjectDoesNotExist as error:
+        return render(request, "online/404.html", {"mensaje": "El producto que buscas no existe", "detalle": "Al parecer el producto no existe o no está disponible"})
+
 
 # carrito de compras
 
 # confirmar pedido
 
 # Mi cuenta
+@login_required(login_url='/login')
+def mi_cuenta(request):
+    return render(request, "online/mi-cuenta.html")
+
+@login_required(login_url='/login')
+def salir(request):
+    logout(request)
+    url = reverse('inicio')
+    return HttpResponseRedirect(url)

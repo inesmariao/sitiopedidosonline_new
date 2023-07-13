@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from online.views import portada, registrarse, iniciar_sesion, registro_cliente, ingresar_login
+from online.views import portada, registrarse, iniciar_sesion, registro_cliente, ingresar_login, mi_cuenta, salir, detalle_producto
 from django.conf.urls.static import static
 from django.conf import settings
 
@@ -26,7 +26,10 @@ urlpatterns = [
     path("registro-cliente", registrarse, name='register'),
     path("registro", registro_cliente, name='registro'),
     path("inicio-cliente", iniciar_sesion, name='login'),
-    path("login", ingresar_login, name='ingresar_login')
+    path("login", ingresar_login, name='ingresar_login'),
+    path("mi-cuenta", mi_cuenta, name='mi-cuenta'),
+    path("salir", salir, name='salir'),
+    path('detalle-producto/<slug:slug_url>', detalle_producto, name='detalle-producto'),
 ]
 
 if settings.DEBUG is True: # para confirmar que está en modo desarrollo

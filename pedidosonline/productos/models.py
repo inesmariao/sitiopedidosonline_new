@@ -51,6 +51,10 @@ class Producto(models.Model):
     precio = models.DecimalField("Precio", max_digits=9, decimal_places=2)
     categoria = models.ForeignKey(Categoria, on_delete=models.RESTRICT)
     marca = models.ForeignKey(Marca, on_delete=models.RESTRICT)
+    
+    # retornar las dos primeras imagenes del producto
+    def primeras_imagenes(self):
+        return self.imagen_set.order_by('orden')[:2]
 
     def __str__(self):
         return self.titulo

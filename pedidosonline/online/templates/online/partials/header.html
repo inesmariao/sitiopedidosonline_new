@@ -30,12 +30,21 @@
                                 <li>
                                     <a href="{% url 'inicio' %}">Portada</a>
                                 </li>
+                                {% if user.is_authenticated %}
+                                <li>
+                                    <a href="{% url 'mi-cuenta' %}">Mi cuenta</a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'salir' %}">Salir</a>
+                                </li>
+                                {% else %}
                                 <li>
                                     <a href="{% url 'register' %}">Registrarse</a>
                                 </li>
                                 <li>
                                     <a href="{% url 'login' %}">Ingresar</a>
                                 </li>
+                                {% endif %}
                             </ul>
                         </div>
                     </div>
