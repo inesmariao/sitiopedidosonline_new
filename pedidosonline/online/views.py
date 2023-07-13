@@ -110,8 +110,10 @@ def detalle_producto(request, slug_url):
 
 
 # carrito de compras
+# cart.html: url, vista y template
 
-# confirmar pedido
+# confirmar pedido (proteger: no se puede acceder si no se ha iniciado sesión )
+# checkout.html
 
 # Mi cuenta
 @login_required(login_url='/login')
