@@ -67,6 +67,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'online.context_processors.valores_carrito'
             ],
         },
     },
@@ -83,7 +84,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'pedidosonline',
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD': 'admin123',
         'HOST': 'localhost',
         'PORT': '3306'
     }

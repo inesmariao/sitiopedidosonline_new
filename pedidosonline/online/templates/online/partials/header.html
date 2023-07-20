@@ -31,19 +31,19 @@
                                     <a href="{% url 'inicio' %}">Portada</a>
                                 </li>
                                 {% if user.is_authenticated %}
-                                <li>
-                                    <a href="{% url 'mi-cuenta' %}">Mi cuenta</a>
-                                </li>
-                                <li>
-                                    <a href="{% url 'salir' %}">Salir</a>
-                                </li>
+                                    <li>
+                                        <a href="{% url 'mi-cuenta' %}">Mi cuenta</a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'salir' %}">Salir</a>
+                                    </li>
                                 {% else %}
-                                <li>
-                                    <a href="{% url 'register' %}">Registrarse</a>
-                                </li>
-                                <li>
-                                    <a href="{% url 'login' %}">Ingresar</a>
-                                </li>
+                                    <li>
+                                        <a href="{% url 'register' %}">Registrarse</a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'login' %}">Ingresar</a>
+                                    </li>
                                 {% endif %}
                             </ul>
                         </div>
@@ -88,12 +88,12 @@
                                 <li class="minicart-wrap">
                                     <a href="#miniCart" class="minicart-btn toolbar-btn">
                                         <div class="minicart-count_area">
-                                            <span class="item-count">03</span>
+                                            <span class="item-count">{{ carrito_items }}</span>
                                             <i class="ion-bag"></i>
                                         </div>
                                         <div class="minicart-front_text">
-                                            <span>Cart:</span>
-                                            <span class="total-price">462.4</span>
+                                            <span>Total:</span>
+                                            <span class="total-price">$ {{ carrito_total }}</span>
                                         </div>
                                     </a>
                                 </li>
@@ -109,7 +109,7 @@
                                 <li class="minicart-wrap">
                                     <a href="#miniCart" class="minicart-btn toolbar-btn">
                                         <div class="minicart-count_area">
-                                            <span class="item-count">03</span>
+                                            <span class="item-count">{{ carrito_items }}</span>
                                             <i class="ion-bag"></i>
                                         </div>
                                     </a>
@@ -373,7 +373,7 @@
                                         <li class="minicart-wrap">
                                             <a href="#miniCart" class="minicart-btn toolbar-btn">
                                                 <div class="minicart-count_area">
-                                                    <span class="item-count">03</span>
+                                                    <span class="item-count">{{ carrito_total }}</span>
                                                     <i class="ion-bag"></i>
                                                 </div>
                                             </a>
@@ -402,55 +402,33 @@
             <a href="#" class="btn-close"><i class="ion-android-close"></i></a>
             <div class="minicart-content">
                 <div class="minicart-heading">
-                    <h4>Shopping Cart</h4>
+                    <h4>Mi Carrito de Compras</h4>
                 </div>
                 <ul class="minicart-list">
+                    {% for item in carrito%}
                     <li class="minicart-product">
                         <a class="product-item_remove" href="javascript:void(0)"><i
                             class="ion-android-close"></i></a>
                         <div class="product-item_img">
-                            <img src="assets/images/product/1-1.jpg" alt="Kenne's Product Image">
+                            <img src="{{ item.imagen }}" alt="Kenne's Product Image">
                         </div>
                         <div class="product-item_content">
-                            <a class="product-item_title" href="shop-left-sidebar.html">Autem ipsa ad</a>
-                            <span class="product-item_quantity">1 x $145.80</span>
+                            <a class="product-item_title" href="shop-left-sidebar.html">{{ item.descripcion }}</a>
+                            <span class="product-item_quantity">{{ item.cantidad }} x $ {{ item.precio }}</span>
                         </div>
                     </li>
-                    <li class="minicart-product">
-                        <a class="product-item_remove" href="javascript:void(0)"><i
-                            class="ion-android-close"></i></a>
-                        <div class="product-item_img">
-                            <img src="assets/images/product/2-1.jpg" alt="Kenne's Product Image">
-                        </div>
-                        <div class="product-item_content">
-                            <a class="product-item_title" href="shop-left-sidebar.html">Tenetur illum
-                                amet</a>
-                            <span class="product-item_quantity">1 x $150.80</span>
-                        </div>
-                    </li>
-                    <li class="minicart-product">
-                        <a class="product-item_remove" href="javascript:void(0)"><i
-                            class="ion-android-close"></i></a>
-                        <div class="product-item_img">
-                            <img src="assets/images/product/3-1.jpg" alt="Kenne's Product Image">
-                        </div>
-                        <div class="product-item_content">
-                            <a class="product-item_title" href="shop-left-sidebar.html">Non doloremque
-                                placeat</a>
-                            <span class="product-item_quantity">1 x $165.80</span>
-                        </div>
-                    </li>
+                    {% endfor %}
                 </ul>
             </div>
             <div class="minicart-item_total">
-                <span>Subtotal</span>
-                <span class="ammount">$462.4‬0</span>
+                <span>Total</span>
+                <span class="ammount">$ {{ carrito_total }}</span>
             </div>
             <div class="minicart-btn_area">
-                <a href="cart.html" class="kenne-btn kenne-btn_fullwidth">Minicart</a>
+                <a href="cart.html" class="kenne-btn kenne-btn_fullwidth">Ir al carrito</a>
             </div>
             <div class="minicart-btn_area">
-                <a href="checkout.html" class="kenne-btn kenne-btn_fullwidth">Checkout</a>
+                <a href="checkout.html" class="kenne-btn kenne-btn_fullwidth">Confirmar pedido</a>
             </div>
         </div>
     </div>

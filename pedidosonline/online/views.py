@@ -1,20 +1,20 @@
 from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.urls import reverse
 from online.forms import RegistroClienteForm, LoginForm
 from django.contrib.auth.models import User
 from pedidos.models import Cliente
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from productos.models import Producto
+from productos.models import Producto, Presentacion, Medida, Color
 from django.core.exceptions import ObjectDoesNotExist
-
 
 # portada
 
 
 def portada(request):
     # consultar los registros en la tabla producto
+    # select * from producto
     productos = Producto.objects.all()
     return render(request, "online/portada.html", {"lista_productos": productos})
 
@@ -69,8 +69,8 @@ def registro_cliente(request):
         url = reverse('register')
         return HttpResponseRedirect(url)
 
-# iniciar sesión
 
+# iniciar sesión
 def iniciar_sesion(request):
     formulario = LoginForm(initial={"email": "", "password": ""})
     return render(request, "online/iniciar-sesion.html", {"formulario": formulario})
@@ -85,8 +85,8 @@ def ingresar_login(request):
             email = formulario.cleaned_data["email"]
             password = formulario.cleaned_data["password"]
             usuario_logeado = authenticate(username=email, password=password)
-            login(request, usuario_logeado)
-            
+            login(request, usuario_logeado)  # es la que inicia sesion
+
             # mi-cuenta
             url = reverse("mi-cuenta")
             return HttpResponseRedirect(url)
@@ -96,32 +96,135 @@ def ingresar_login(request):
         url = reverse('login')
         return HttpResponseRedirect(url)
 
+
+@login_required(login_url='/inicio-cliente')
+def salir(request):
+    logout(request)
+    url = reverse('inicio')
+    return HttpResponseRedirect(url)
+
 # detalle del producto
+# detalle-producto/producto-abc
+
+
 def detalle_producto(request, slug_url):
     try:
         # Object Productom, Exception
         producto = Producto.objects.get(slug=slug_url)
         # imagenes
         imagenes = producto.imagen_set.order_by('orden')
+        # medidas
+        medidas = producto.medidas.distinct()  # lista de objetos de la clase Medida
+        # colores
+        colores = producto.colores.distinct()
 
-        return render(request, "online/detalle-producto.html", {"producto": producto, "imagenes": imagenes})
+        return render(request, "online/detalle-producto.html", {
+            "producto": producto,
+            "imagenes": imagenes,
+            "medidas": medidas,
+            "colores": colores
+        })
     except ObjectDoesNotExist as error:
         return render(request, "online/404.html", {"mensaje": "El producto que buscas no existe", "detalle": "Al parecer el producto no existe o no está disponible"})
 
-
 # carrito de compras
-# cart.html: url, vista y template
+# cart.html
 
-# confirmar pedido (proteger: no se puede acceder si no se ha iniciado sesión )
+
+# confirmar pedido (proteger: no se puede acceder sino se ha iniciado sesion)
 # checkout.html
 
 # Mi cuenta
-@login_required(login_url='/login')
+@login_required(login_url='/inicio-cliente')
 def mi_cuenta(request):
     return render(request, "online/mi-cuenta.html")
 
-@login_required(login_url='/login')
-def salir(request):
-    logout(request)
-    url = reverse('inicio')
-    return HttpResponseRedirect(url)
+
+def agregar_item(request):
+    if request.method == 'POST':
+        producto_id = int(request.POST.get('producto_id'))
+        cantidad = int(request.POST.get('cantidad'))
+        medida_id = int(request.POST.get('medida_id'))
+        color_id = int(request.POST.get('color_id'))
+
+        try:
+            # verificar que la presentacion exista
+            presentacion = Presentacion.objects.get(producto_id=producto_id,
+                                                    medida_id=medida_id,
+                                                    color_id=color_id)
+
+
+            
+            # obtener la variables "carrito"
+            """
+            [
+                item1,
+                item2,
+                item3,
+                ....
+            ]
+            
+            {
+                "presentacion_id": 1,
+                "cantidad": 10,
+                "precio": 150,
+                "subtotal": 1500,
+                "descripcion": Producto ABC VERDE S,
+                "imagen": imagen
+            }
+            """
+            carrito = request.session.get('carrito', [])
+
+            precio_venta = float(presentacion.producto.precio)
+            subtotal = precio_venta * float(cantidad)
+            descripcion = presentacion.__str__()
+            imagen = presentacion.producto.imagen_set.order_by('orden')[0].nombre.url
+
+            elemento_nuevo = True
+            posicion_existente = 0
+            
+            for indice, elemento in enumerate(carrito):
+                if elemento["presentacion_id"] == presentacion.id:
+                    elemento_nuevo = False
+                    posicion_existente = indice
+                    cantidad = cantidad + elemento["cantidad"]
+
+            # verificar el stock disponible
+            if elemento_nuevo:
+                item = {
+                    "presentacion_id": presentacion.id,
+                    "cantidad": cantidad,
+                    "precio": precio_venta,
+                    "subtotal": subtotal,
+                    "descripcion": descripcion,
+                    "imagen": imagen
+                }
+                
+                carrito.append(item)
+            else:
+                carrito[posicion_existente] = {
+                    "presentacion_id": presentacion.id,
+                    "cantidad": cantidad,
+                    "precio": precio_venta,
+                    "subtotal": subtotal,
+                    "descripcion": descripcion,
+                    "imagen": imagen
+                }
+            #actualizar la variable de sesion
+            request.session["carrito"] = carrito
+            
+            #dar un mensaje
+            data = {"message": 'Item agregado correctamente'}
+            return JsonResponse(data, status=200)
+
+        except ObjectDoesNotExist as error:
+            data = {"message": 'Presentacion de producto no existe'}
+            return JsonResponse(data, status=404)
+    else:
+        pass
+    
+def carrito(request):
+    return render("online/carrito.html")
+    
+def confirmar_pedido(request):
+    return render("online/confirmar_pedido.html")

@@ -52,6 +52,10 @@ class Producto(models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.RESTRICT)
     marca = models.ForeignKey(Marca, on_delete=models.RESTRICT)
     
+    # representar la relación de muchos a muchos entre Producto y Medida - Color
+    medidas = models.ManyToManyField(Medida, through='Presentacion')
+    colores = models.ManyToManyField(Color, through='Presentacion')
+    
     # retornar las dos primeras imagenes del producto
     def primeras_imagenes(self):
         return self.imagen_set.order_by('orden')[:2]

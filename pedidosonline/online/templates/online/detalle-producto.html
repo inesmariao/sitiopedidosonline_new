@@ -76,33 +76,32 @@ Detalle del producto
                         </div>
                         <div class="product-size_box">
                             <span>Medidas</span>
-                            <select class="myniceselect nice-select">
-                                <option value="1">S</option>
-                                <option value="2">M</option>
-                                <option value="3">L</option>
-                                <option value="4">XL</option>
+                            <select class="myniceselect nice-select" id="medida_id">
+                                {% for medida in medidas %}
+                                    <option value="{{ medida.id }}">{{ medida.nombre }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="product-size_box">
                             <span>Colores</span>
-                            <select class="myniceselect nice-select">
-                                <option value="1">S</option>
-                                <option value="2">M</option>
-                                <option value="3">L</option>
-                                <option value="4">XL</option>
+                            <select class="myniceselect nice-select" id="color_id">
+                                {% for color in colores %}
+                                <option value="{{ color.id }}">{{ color.nombre }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="quantity">
                             <label>Cantidad</label>
+                            <input type="hidden" id="producto_id" value="{{ producto.id }}" />
                             <div class="cart-plus-minus">
-                                <input class="cart-plus-minus-box" value="1" type="text">
+                                <input class="cart-plus-minus-box" value="1" type="text" id="cantidad">
                                 <div class="dec qtybutton"><i class="fa fa-angle-down"></i></div>
                                 <div class="inc qtybutton"><i class="fa fa-angle-up"></i></div>
                             </div>
                         </div>
                         <div class="qty-btn_area mb-3">
                             <ul>
-                                <li><a class="qty-cart_btn" href="cart.html">Agregar al carrito</a></li>
+                                <li><a class="qty-cart_btn" onclick="agregarItem()">Agrear al carrito</a></li>
                                 <li><a class="qty-wishlist_btn" href="wishlist.html" data-toggle="tooltip" title="Add To Wishlist"><i class="ion-android-favorite-outline"></i></a>
                                 </li>
                                 <li><a class="qty-compare_btn" href="compare.html" data-toggle="tooltip" title="Compare This Product"><i class="ion-ios-shuffle-strong"></i></a></li>
@@ -116,4 +115,36 @@ Detalle del producto
 </div>
 <!-- Kenne's Single Product Area End Here -->
 
+{% endblock %}
+
+{% block javascript %}
+<script>
+    function agregarItem(){
+        // realizar peticion ajax
+        // axios
+        const cantidad = document.getElementById('cantidad').value;
+        const medida_id = document.getElementById('medida_id').value;
+        const color_id = document.getElementById('color_id').value;
+        const producto_id = document.getElementById('producto_id').value;
+        const crsfmiddlewaretoken = '{{ csrf_token }}';
+
+        const data = new FormData();
+        data.append('cantidad', cantidad);
+        data.append('medida_id', medida_id);
+        data.append('color_id', color_id);
+        data.append('producto_id', producto_id);
+        data.append('csrfmiddlewaretoken', crsfmiddlewaretoken);
+
+        axios.post('{% url 'agregar_item' %}', data)
+        .then(function(respuesta){
+            toastr.success(respuesta.data.message)
+            setTimeout(function(){
+                window.location.reload();
+            }, 100);
+        })
+        .catch(function(error){
+            toastr.error(error.response.data.message)
+        });
+    }
+</script>
 {% endblock %}
