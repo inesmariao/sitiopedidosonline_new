@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls.static import static
-from online.views import portada, registrarse, iniciar_sesion, registro_cliente, ingresar_login, mi_cuenta, salir, detalle_producto, agregar_item, carrito, confirmar_pedido
+from online.views import portada, registrarse, iniciar_sesion, registro_cliente, ingresar_login, mi_cuenta, salir, detalle_producto, agregar_item, carrito, confirmar_pedido, quitar_item
 from django.conf import settings
 
 urlpatterns = [
@@ -31,6 +31,7 @@ urlpatterns = [
     path('salir', salir, name='salir'),
     path('detalle-producto/<slug:slug_url>', detalle_producto, name='detalle-producto'),
     path('carrito/agregar-item', agregar_item, name="agregar_item"),
+    path('carrito/quitar-item', quitar_item, name="quitar_item"),
     path('carrito', carrito, name='carrito'),
     path('confirmar-pedido', confirmar_pedido, name='confirmar-pedido')
     # confirmar pedido

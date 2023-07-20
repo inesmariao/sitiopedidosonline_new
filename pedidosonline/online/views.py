@@ -224,7 +224,26 @@ def agregar_item(request):
         pass
     
 def carrito(request):
-    return render("online/carrito.html")
+    return render(request, "online/carrito.html")
     
 def confirmar_pedido(request):
-    return render("online/confirmar_pedido.html")
+    return render(request, "online/confirmar_pedido.html")
+
+def quitar_item(request):
+    if request.method == 'POST':
+        indice = int(request.POST.get("indice"))
+        try:
+            carrito = request.session.get('carrito', [])
+            del carrito[indice]
+            
+            request.session['carrito'] = carrito
+            
+            data = {'message': 'Item removido correctamente'}
+            
+            return JsonResponse(data, status=200)
+        except:
+            data = {'message': 'Error al intentar eliminar ítem del carrito de compras'}
+            return JsonResponse(data, 500)
+    else:
+        inicio = reverse('carrito')
+        return HttpResponseRedirect(inicio)
