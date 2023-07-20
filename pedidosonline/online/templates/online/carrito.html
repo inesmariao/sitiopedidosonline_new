@@ -46,12 +46,12 @@ Carrito de compras
                                     <td class="kenne-product-price"><span class="amount">$ {{ item.precio }}</span></td>
                                     <td class="quantity">
                                         <div class="cart-plus-minus">
-                                            <input class="cart-plus-minus-box" value="{{ item.cantidad }}" type="text">
+                                            <input onchange="modificarCantidad({{ forloop.counter0 }}, this)" class="cart-plus-minus-box" value="{{ item.cantidad }}" type="text">
                                             <div class="dec qtybutton"><i class="fa fa-angle-down"></i></div>
                                             <div class="inc qtybutton"><i class="fa fa-angle-up"></i></div>
                                         </div>
                                     </td>
-                                    <td class="product-subtotal"><span class="amount">$ {{ item.subtotal }}</span></td>
+                                    <td class="product-subtotal"><span class="amount">$ {{ item.subtotal|floatformat:"2g" }}</span></td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -124,5 +124,30 @@ Carrito de compras
             }
         });
     }
+
+    function modificarCantidad(indice, cajatexto){
+        const cantidad = cajatexto.value;
+
+        const data = new FormData();
+        data.append('indice', indice);
+        data.append('cantidad', cantidad);
+        data.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+        axios.post('{% url 'modificar-cantidad' %}', data)
+        .then(function(respuesta){
+            toastr.success(respuesta.data.message);
+            setTimeout(function(){
+                window.location.reload();
+            }, 1500);
+        })
+        .catch(function(error){
+            if(error.response){
+                toastr.error(error.response.data.message)
+            }else{
+                toastr.error(error)
+            }
+        });
+    }
+
 </script>
 {% endblock %}

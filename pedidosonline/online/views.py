@@ -235,15 +235,47 @@ def quitar_item(request):
         try:
             carrito = request.session.get('carrito', [])
             del carrito[indice]
-            
+
             request.session['carrito'] = carrito
-            
+
             data = {'message': 'Item removido correctamente'}
-            
+
             return JsonResponse(data, status=200)
         except:
             data = {'message': 'Error al intentar eliminar ítem del carrito de compras'}
             return JsonResponse(data, 500)
+    else:
+        inicio = reverse('carrito')
+        return HttpResponseRedirect(inicio)
+    
+
+def modificar_cantidad(request):
+    if request.method == 'POST':
+        # capturar parametros
+        indice = int(request.POST.get('indice'))
+        cantidad = int(request.POST.get('cantidad'))
+        
+        carrito = request.session.get('carrito')
+        item = carrito[indice]
+        
+        presentacion = Presentacion.objects.get(id=item['presentacion_id'])
+        
+        if presentacion.stock < cantidad:
+            data = {"message": 'Stock no disponible'}
+            return JsonResponse(data, status=409)
+        
+        # actualizar la cantidad del item 
+        carrito[indice]['cantidad'] = cantidad
+        precio = float(carrito[indice]['precio'])
+        subtotal = precio * float(cantidad)
+        carrito[indice]['subtotal'] = subtotal
+        
+        # actualizamos la variable session carrito
+        request.session['carrito'] = carrito
+        
+        data = {"message": 'Cantidad actualizada correctamente'}
+        return JsonResponse(data, status=200)
+        
     else:
         inicio = reverse('carrito')
         return HttpResponseRedirect(inicio)
